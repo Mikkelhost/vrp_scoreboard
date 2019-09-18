@@ -1,24 +1,23 @@
+vRP = Proxy.getInterface("vRP")
+vRPclient = Tunnel.getInterface("vRP", "vrp_scoreboard")
+
+
 local idVisable = true
-ESX = nil
+local jobVisable = true
 
-Citizen.CreateThread(function()
-	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Citizen.Wait(0)
-	end
-
-	Citizen.Wait(2000)
-	ESX.TriggerServerCallback('esx_scoreboard:getConnectedPlayers', function(connectedPlayers)
-		UpdatePlayerTable(connectedPlayers)
-	end)
+RegisterNetEvent("vrp_scoreboard:firstjoin")
+AddEventHandler("vrp_scoreboard:firstjoin",function(connectedPlayers)
+	UpdatePlayerTable(connectedPlayers)
 end)
+
+
 
 Citizen.CreateThread(function()
 	Citizen.Wait(500)
 	SendNUIMessage({
 		action = 'updateServerInfo',
 
-		maxPlayers = GetConvarInt('sv_maxclients', 32),
+		maxPlayers = GetConvarInt('sv_maxclients', 64),
 		uptime = 'unknown',
 		playTime = '00h 00m'
 	})
@@ -51,6 +50,20 @@ AddEventHandler('esx_scoreboard:toggleID', function(state)
 	})
 end)
 
+RegisterNetEvent('esx_scoreboard:toggleJob')
+AddEventHandler('esx_scoreboard:toggleJob', function(state)
+	if state then
+		jobVisable = state
+	else
+		jobVisable = not jobVisable
+	end
+
+	SendNUIMessage({
+		action = 'toggleJob',
+		state = jobVisable
+	})
+end)
+
 RegisterNetEvent('uptime:tick')
 AddEventHandler('uptime:tick', function(uptime)
 	SendNUIMessage({
@@ -61,30 +74,30 @@ end)
 
 function UpdatePlayerTable(connectedPlayers)
 	local formattedPlayerList, num = {}, 1
-	local ems, police, taxi, mechanic, cardealer, estate, players = 0, 0, 0, 0, 0, 0, 0
+	local ems, police, taxi, mechanic, advokat, players = 0, 0, 0, 0, 0, 0, 0
 
 	for k,v in pairs(connectedPlayers) do
 
 		if num == 1 then
-			table.insert(formattedPlayerList, ('<tr><td>%s</td><td>%s</td><td>%s</td>'):format(v.name, v.id, v.ping))
+			table.insert(formattedPlayerList, ('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>'):format(v.name, v.id, v.job, v.ping))
 			num = 2
 		elseif num == 2 then
-			table.insert(formattedPlayerList, ('<td>%s</td><td>%s</td><td>%s</td></tr>'):format(v.name, v.id, v.ping))
+			table.insert(formattedPlayerList, ('<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'):format(v.name, v.id, v.job, v.ping))
 			num = 1
 		end
 
 		players = players + 1
 
-		if v.job == 'ambulance' then
+		if v.job == 'Regionschef' or v.job == 'Viceregionschef' or v.job == 'Overlæge' or v.job == 'Akutlæge' or v.job == 'Ambulanceredder' or v.job == 'Redderelev' then
 			ems = ems + 1
-		elseif v.job == 'police' then
+		elseif v.job == 'Rigspolitichef' or v.job == 'Vicerigspolitichef' or v.job == 'Politiinspektør' or v.job == 'Vicepolitiinspektør' or v.job == 'Civilbetjent' or v.job == 'Specialenhed' or v.job == 'Politikommissær' or v.job == 'Politiassistent' or v.job == 'Politibetjent' or v.job == 'Politielev' then
 			police = police + 1
-		elseif v.job == 'taxi' then
+		elseif v.job == 'Taxa chauffør' then
 			taxi = taxi + 1
-		elseif v.job == 'mecano' then
+		elseif v.job == 'Mekaniker' then
 			mechanic = mechanic + 1
-		elseif v.job == 'cardealer' then
-			cardealer = cardealer + 1
+		elseif v.job == 'Advokat' then
+			advokat = advokat + 1
 		elseif v.job == 'realestateagent' then
 			estate = estate + 1
 		end
@@ -101,7 +114,15 @@ function UpdatePlayerTable(connectedPlayers)
 
 	SendNUIMessage({
 		action = 'updatePlayerJobs',
-		jobs   = {ems = ems, police = police, taxi = taxi, mechanic = mechanic, cardealer = cardealer, estate = estate, player_count = players}
+		jobs   = {ems = ems, police = police, taxi = taxi, mechanic = mechanic, advokat = advokat, player_count = players}
+	})
+	SendNUIMessage({
+		action = 'toggleJob',
+		state = jobVisable
+	})
+	SendNUIMessage({
+		action = 'toggleID',
+		state = idVisable
 	})
 end
 
@@ -109,23 +130,27 @@ Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(0)
 
-		if IsControlJustReleased(0, 57) and IsInputDisabled(0) then
-			ToggleScoreBoard()
+		if IsControlJustReleased(0, 212) then
+			TriggerServerEvent("vrp_scoreboard:askperm")
 			Citizen.Wait(200)
 
 		-- D-pad up on controllers works, too!
 		elseif IsControlJustReleased(0, 172) and not IsInputDisabled(0) then
-			ToggleScoreBoard()
+			TriggerServerEvent("vrp_scoreboard:askperm")
 			Citizen.Wait(200)
 		end
 	end
+end)
+
+RegisterNetEvent("vrp_scoreboard:permgranted")
+AddEventHandler("vrp_scoreboard:permgranted",function()
+	ToggleScoreBoard()
 end)
 
 -- Close scoreboard when game is paused
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(300)
-
 		if IsPauseMenuActive() and not IsPaused then
 			IsPaused = true
 			SendNUIMessage({
