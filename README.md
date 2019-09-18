@@ -1,8 +1,8 @@
-# esx_scoreboard
+# vrp_scoreboard
 
-An ESX scoreboard based off the Stadus_Scoreboard resource.
+An VRP scoreboard based off the esx_scoreboard with is based of the original Stadus_Scoreboard resource.
 
-![Preview image](https://i.imgur.com/z3UXs6K.jpg)
+![Preview image](https://i.imgur.com/K5KnTvf.png)
 
 ## Feautures
 
@@ -18,7 +18,7 @@ Properly install the [uptime](https://forum.fivem.net/t/release-show-uptime-in-s
 
 - Stadus, original resource
 - LifeGoal, design
-- Hawaii, re-wrote the resource
+- Hawaii, Wrote the esx resource
 
 ## License
 
