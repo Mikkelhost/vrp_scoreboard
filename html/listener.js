@@ -23,13 +23,25 @@ $(function () {
 
 				if (event.data.state) {
 					$('td:nth-child(2),th:nth-child(2)').show();
-					$('td:nth-child(5),th:nth-child(5)').show();
+					$('td:nth-child(6),th:nth-child(6)').show();
 				} else {
 					$('td:nth-child(2),th:nth-child(2)').hide();
-					$('td:nth-child(5),th:nth-child(5)').hide();
+					$('td:nth-child(6),th:nth-child(6)').hide();
 				}
 
 				break;
+
+			case 'toggleJob':
+
+				if (event.data.state) {
+					$('td:nth-child(3),th:nth-child(3)').show();
+					$('td:nth-child(7),th:nth-child(7)').show();
+				} else {
+					$('td:nth-child(3),th:nth-child(3)').hide();
+					$('td:nth-child(7),th:nth-child(7)').hide();
+				}
+
+				break;	
 
 			case 'updatePlayerJobs':
 				var jobs = event.data.jobs;
@@ -40,8 +52,8 @@ $(function () {
 				$('#police').html(jobs.police);
 				$('#taxi').html(jobs.taxi);
 				$('#mechanic').html(jobs.mechanic);
-				$('#cardealer').html(jobs.cardealer);
-				$('#estate').html(jobs.estate);
+				$('#advokat').html(jobs.advokat);
+				//$('#estate').html(jobs.estate);
 				break;
 
 			case 'updatePlayerList':
@@ -72,7 +84,7 @@ $(function () {
 				break;
 
 			default:
-				console.log('esx_scoreboard: unknown action!');
+				console.log('vrp_scoreboard: unknown action!');
 				break;
 		}
 	}, false);
@@ -80,7 +92,7 @@ $(function () {
 
 function applyPingColor() {
 	$('#playerlist tr').each(function () {
-		$(this).find('td:nth-child(3),td:nth-child(6)').each(function () {
+		$(this).find('td:nth-child(4),td:nth-child(8)').each(function () {
 			var ping = $(this).html();
 			var color = 'green';
 
@@ -102,12 +114,12 @@ function updatePing(players) {
 	jQuery.each(players, function (index, element) {
 		if (element != null) {
 			$('#playerlist tr:not(.heading)').each(function () {
-				$(this).find('td:nth-child(2):contains(' + element.id + ')').each(function () {
-					$(this).parent().find('td').eq(2).html(element.ping);
+				$(this).find('td:nth-child(3):contains(' + element.job + ')').each(function () {
+					$(this).parent().find('td').eq(3).html(element.ping);
 				});
 
-				$(this).find('td:nth-child(5):contains(' + element.id + ')').each(function () {
-					$(this).parent().find('td').eq(5).html(element.ping);
+				$(this).find('td:nth-child(7):contains(' + element.job + ')').each(function () {
+					$(this).parent().find('td').eq(7).html(element.ping);
 				});
 			});
 		}
