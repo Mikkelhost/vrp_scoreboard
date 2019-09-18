@@ -1,6 +1,6 @@
 # vrp_scoreboard
 
-An VRP scoreboard converted from the esx_scoreboard with is based of the original Stadus_Scoreboard resource.
+A VRP scoreboard converted from the esx_scoreboard with is based of the original Stadus_Scoreboard resource.
 
 Here is a preview as an admin
 ![Preview image](https://i.imgur.com/K5KnTvf.png)
